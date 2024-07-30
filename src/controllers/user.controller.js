@@ -5,10 +5,7 @@ import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 
 const registerUser = asyncHandler(async (req, res) => {
-    const { fullName, email, username } = req.body;
-    console.log("Email: ", email);
-    console.log("Username: ", username);
-    console.log("Fullname: ", fullName);
+    const { fullName, email, username, password } = req.body;
 
     if (
         [fullName, email, username].some(
@@ -43,7 +40,8 @@ const registerUser = asyncHandler(async (req, res) => {
         fullName,
         email,
         username,
-        avatar: avatar?.url || "",
+        password,
+        avatar: avatar,
         coverImage: coverImage?.url || "",
     });
 
@@ -56,7 +54,7 @@ const registerUser = asyncHandler(async (req, res) => {
     }
 
     res.status(201).json(
-        new ApiResponse(201, createdUser, "User registered successfully")
+        new ApiResponse(201, user, "User registered successfully")
     );
 });
 
