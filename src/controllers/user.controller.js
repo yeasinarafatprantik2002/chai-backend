@@ -7,6 +7,9 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 const registerUser = asyncHandler(async (req, res) => {
     const { fullName, email, username } = req.body;
     console.log("Email: ", email);
+    console.log("Username: ", username);
+    console.log("Fullname: ", fullName);
+
     if (
         [fullName, email, username].some(
             (field) => (field === field?.trim()) === ""
@@ -40,7 +43,7 @@ const registerUser = asyncHandler(async (req, res) => {
         fullName,
         email,
         username,
-        avatar: avatar.url,
+        avatar: avatar?.url || "",
         coverImage: coverImage?.url || "",
     });
 
