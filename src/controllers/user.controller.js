@@ -92,7 +92,7 @@ const loginUser = asyncHandler(async (req, res) => {
     // send the user to the client
 
     const { username, email, password } = req.body;
-    if (!username || !email) {
+    if (!(username || email)) {
         throw new ApiError(400, "Username or email is required");
     }
 
@@ -126,8 +126,8 @@ const loginUser = asyncHandler(async (req, res) => {
 
     return res
         .status(200)
-        .cookie("refreshToken", refreshToken, option)
         .cookie("accessToken", accessToken, option)
+        .cookie("refreshToken", refreshToken, option)
         .json(
             new ApiResponse(
                 200,
