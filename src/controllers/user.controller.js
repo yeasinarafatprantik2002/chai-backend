@@ -45,8 +45,8 @@ const registerUser = asyncHandler(async (req, res) => {
         coverImage: coverImage || "",
     });
 
-    const createdUser = User.findById(user._id).select(
-        "-password -refreshToken"
+    const createdUser = await User.findById(user._id).select(
+        "-password -resetToken"
     );
 
     if (!createdUser) {
@@ -54,7 +54,7 @@ const registerUser = asyncHandler(async (req, res) => {
     }
 
     res.status(201).json(
-        new ApiResponse(201, user, "User registered successfully")
+        new ApiResponse(201, createdUser, "User registered successfully")
     );
 });
 
