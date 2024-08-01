@@ -42,7 +42,7 @@ const registerUser = asyncHandler(async (req, res) => {
         username,
         password,
         avatar: avatar,
-        coverImage: coverImage?.url || "",
+        coverImage: coverImage || "",
     });
 
     const createdUser = User.findById(user._id).select(
