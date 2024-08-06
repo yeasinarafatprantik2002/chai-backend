@@ -210,6 +210,7 @@ const getVideoById = asyncHandler(async (req, res) => {
 const updateVideo = asyncHandler(async (req, res) => {
     const { videoId } = req.params;
     const { title, description } = req.body;
+    const userId = req.user._id;
 
     if (!isValidObjectId(videoId)) {
         throw new ApiError(400, "Invalid video ID");
@@ -223,6 +224,10 @@ const updateVideo = asyncHandler(async (req, res) => {
 
     if (!video) {
         throw new ApiError(404, "Video not found");
+    }
+
+    if (video.owner.toString() !== userId.toString()) {
+        throw new ApiError(403, "You are not authorized to update this video");
     }
 
     await deleteFromCloudinary(video.thumbnail, "image");
@@ -265,6 +270,7 @@ const updateVideo = asyncHandler(async (req, res) => {
 });
 
 const deleteVideo = asyncHandler(async (req, res) => {
+    const userId = req.user._id;
     const { videoId } = req.params;
     if (!isValidObjectId(videoId)) {
         throw new ApiError(400, "Invalid video ID");
@@ -274,6 +280,10 @@ const deleteVideo = asyncHandler(async (req, res) => {
 
     if (!video) {
         throw new ApiError(404, "Video not found");
+    }
+
+    if (video.owner.toString() !== userId.toString()) {
+        throw new ApiError(403, "You are not authorized to delete this video");
     }
 
     await deleteFromCloudinary(video.thumbnail, "image");
@@ -297,6 +307,8 @@ const deleteVideo = asyncHandler(async (req, res) => {
 
 const togglePublishStatus = asyncHandler(async (req, res) => {
     const { videoId } = req.params;
+    const userId = req.user._id;
+
     if (!isValidObjectId(videoId)) {
         throw new ApiError(400, "Invalid video ID");
     }
@@ -305,6 +317,10 @@ const togglePublishStatus = asyncHandler(async (req, res) => {
 
     if (!video) {
         throw new ApiError(404, "Video not found");
+    }
+
+    if (video.owner.toString() !== userId.toString()) {
+        throw new ApiError(403, "You are not authorized to update this video");
     }
 
     const updatedVideo = await Video.findByIdAndUpdate(
