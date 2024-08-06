@@ -1,5 +1,7 @@
 import { v2 as cloudinary } from "cloudinary";
+import { log } from "console";
 import fs from "fs";
+import { type } from "os";
 
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -19,6 +21,24 @@ export const uploadOnCloudinary = async (localFilePath) => {
     } catch (error) {
         fs.unlinkSync(localFilePath);
         console.error("Error uploading to cloudinary: ", error);
+        return null;
+    }
+};
+
+// delete a image file or video file from cloudinary with url
+export const deleteFromCloudinary = async (url, type) => {
+    try {
+        if (!url) return null;
+
+        const publicId = url.split("/").slice(-1)[0].split(".")[0];
+
+        const response = await cloudinary.api.delete_resources([publicId], {
+            type: "upload",
+            resource_type: type,
+        });
+        return response;
+    } catch (error) {
+        console.error("Error deleting from cloudinary: ", error);
         return null;
     }
 };
