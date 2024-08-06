@@ -1,7 +1,10 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { User } from "../models/user.model.js";
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import {
+    uploadOnCloudinary,
+    deleteFromCloudinary,
+} from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
@@ -23,6 +26,9 @@ const generateAccessTokenAndRefreshToken = async (userId) => {
 
 const registerUser = asyncHandler(async (req, res) => {
     const { fullName, email, username, password } = req.body;
+
+    console.log("req.files:", req.files);
+    console.log(fullName, email, username, password);
 
     if (
         [fullName, email, username].some(
@@ -58,6 +64,9 @@ const registerUser = asyncHandler(async (req, res) => {
     const avatar = await uploadOnCloudinary(avatarLocalPath);
     const coverImage = await uploadOnCloudinary(coverImageLocalPath);
 
+    console.log("avatar:", avatar.url);
+    console.log("coverImage:", coverImage.url);
+
     if (!avatar.url) {
         throw new ApiError(500, "Error uploading files");
     }
@@ -67,8 +76,8 @@ const registerUser = asyncHandler(async (req, res) => {
         email,
         username,
         password,
-        avatar: avatar.url,
-        coverImage: coverImage.url || "",
+        avatar: avatar?.url,
+        coverImage: coverImage?.url || "",
     });
 
     const createdUser = await User.findById(user._id).select(
@@ -277,6 +286,12 @@ const upadteAccountDetails = asyncHandler(async (req, res) => {
 });
 
 const updateUserAvatar = asyncHandler(async (req, res) => {
+    const { oldAvatar } = req.user.avatar;
+
+    if (oldAvatar) {
+        await deleteFromCloudinary(oldAvatar, "image");
+    }
+
     const avatarLocalPath = req.file?.path;
 
     if (!avatarLocalPath) {
@@ -307,6 +322,12 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
 });
 
 const updateUserCoverImage = asyncHandler(async (req, res) => {
+    const { oldCoverImage } = req.user.coverImage;
+
+    if (oldCoverImage) {
+        await deleteFromCloudinary(oldCoverImage, "image");
+    }
+
     const coverImageLocalPath = req.file?.path;
 
     if (!coverImageLocalPath) {
