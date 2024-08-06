@@ -8,6 +8,7 @@ import {
     uploadOnCloudinary,
     deleteFromCloudinary,
 } from "../utils/cloudinary.js";
+import fs from "fs";
 
 const getAllVideos = asyncHandler(async (req, res) => {
     const { page = 1, limit = 10, query, sortBy, sortType, userId } = req.query;
@@ -211,6 +212,7 @@ const updateVideo = asyncHandler(async (req, res) => {
     const { videoId } = req.params;
     const { title, description } = req.body;
     const userId = req.user._id;
+    const thumbnailLocalPath = req.file?.path;
 
     if (!isValidObjectId(videoId)) {
         throw new ApiError(400, "Invalid video ID");
@@ -227,12 +229,11 @@ const updateVideo = asyncHandler(async (req, res) => {
     }
 
     if (video.owner.toString() !== userId.toString()) {
+        fs.unlinkSync(thumbnailLocalPath);
         throw new ApiError(403, "You are not authorized to update this video");
     }
 
     await deleteFromCloudinary(video.thumbnail, "image");
-
-    const thumbnailLocalPath = req.file?.path;
 
     if (!thumbnailLocalPath) {
         throw new ApiError(400, "Thumbnail is required");
