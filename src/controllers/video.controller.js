@@ -139,7 +139,42 @@ const publishAVideo = asyncHandler(async (req, res) => {
         throw new ApiError(500, "Error publishing video");
     }
 
-    const createdVideo = await Video.findById(video._id);
+    const createdVideo = await Video.aggregate([
+        {
+            $match: {
+                _id: video._id,
+            },
+        },
+        {
+            $lookup: {
+                from: "users",
+                localField: "owner",
+                foreignField: "_id",
+                as: "owner",
+            },
+        },
+        {
+            $unwind: "$owner",
+        },
+        {
+            $project: {
+                title: 1,
+                description: 1,
+                videoFile: 1,
+                thumbnail: 1,
+                owner: {
+                    fullName: 1,
+                    username: 1,
+                    avatar: 1,
+                },
+                duration: 1,
+                views: 1,
+                isPublished: 1,
+                createdAt: 1,
+                updatedAt: 1,
+            },
+        },
+    ]);
 
     if (!createdVideo) {
         throw new ApiError(500, "Error fetching video details");
