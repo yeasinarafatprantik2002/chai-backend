@@ -5,12 +5,10 @@ const likeSchema = new mongoose.Schema(
         comment: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Comment",
-            required: true,
         },
         video: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Video",
-            required: true,
         },
         likedBy: {
             type: mongoose.Schema.Types.ObjectId,
@@ -20,7 +18,6 @@ const likeSchema = new mongoose.Schema(
         tweet: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Tweet",
-            required: true,
         },
     },
     { timestamps: true }
