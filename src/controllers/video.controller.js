@@ -14,9 +14,7 @@ const getAllVideos = asyncHandler(async (req, res) => {
     const { page = 1, limit = 10, query, sortBy, sortType, userId } = req.query;
 
     const match = {};
-    const sort = {
-        // createdAt: sortType === "desc" ? -1 : 1,
-    };
+    const sort = {};
 
     if (query) {
         match.title = { $regex: query, $options: "i" };
