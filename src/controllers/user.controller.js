@@ -27,9 +27,6 @@ const generateAccessTokenAndRefreshToken = async (userId) => {
 const registerUser = asyncHandler(async (req, res) => {
     const { fullName, email, username, password } = req.body;
 
-    console.log("req.files:", req.files);
-    console.log(fullName, email, username, password);
-
     if (
         [fullName, email, username].some(
             (field) => (field === field?.trim()) === ""
@@ -63,9 +60,6 @@ const registerUser = asyncHandler(async (req, res) => {
 
     const avatar = await uploadOnCloudinary(avatarLocalPath);
     const coverImage = await uploadOnCloudinary(coverImageLocalPath);
-
-    console.log("avatar:", avatar.url);
-    console.log("coverImage:", coverImage.url);
 
     if (!avatar.url) {
         throw new ApiError(500, "Error uploading files");
