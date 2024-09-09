@@ -281,7 +281,7 @@ const upadteAccountDetails = asyncHandler(async (req, res) => {
 
 const updateUserAvatar = asyncHandler(async (req, res) => {
     const { oldAvatar } = req.user.avatar;
-
+ 
     if (oldAvatar) {
         await deleteFromCloudinary(oldAvatar, "image");
     }
